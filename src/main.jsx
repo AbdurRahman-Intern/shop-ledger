@@ -34,7 +34,7 @@ async function boot() {
     root.render(
       <React.StrictMode>
         <QueryClientProvider client={queryClient}>
-          <BrowserRouter><App /></BrowserRouter>
+          <BrowserRouter basename={import.meta.env.DEV ? '/' : '/shop-ledger'}><App /></BrowserRouter>
         </QueryClientProvider>
       </React.StrictMode>,
     );
