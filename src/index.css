@@ -1,0 +1,72 @@
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/noto-sans-arabic';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Base ---------- */
+@layer base {
+  :root { --chev-pos: right 12px center; }
+  html[dir='rtl'] { --chev-pos: left 12px center; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-ink-50 text-ink-900 font-sans antialiased;
+    /* Avoid the iOS "bounce" showing a different color behind the app. */
+    overscroll-behavior-y: none;
+  }
+  /* Arabic-script languages: Noto Sans Arabic first, slightly taller lines for diacritics/stacking. */
+  html[dir='rtl'] body { font-family: 'Noto Sans Arabic Variable', 'Inter Variable', system-ui, sans-serif; line-height: 1.7; }
+  html[dir='rtl'] .tracking-tight, html[dir='rtl'] .tracking-wide, html[dir='rtl'] .uppercase { letter-spacing: 0; text-transform: none; }
+
+  /* Visible keyboard focus everywhere (accessibility). */
+  :focus-visible { @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white; }
+  button, a, [role='button'] { -webkit-tap-highlight-color: transparent; }
+  input, select, textarea { font: inherit; }
+  /* 16px inputs prevent iOS from zooming the page on focus. */
+  input, select, textarea { font-size: 16px; }
+  @media (min-width: 640px) { input, select, textarea { font-size: 15px; } }
+}
+
+@layer components {
+  .card { @apply bg-white border border-ink-200 rounded-2xl shadow-card min-w-0; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  /* 44px minimum touch target on mobile. */
+  .touch { @apply min-h-[44px]; }
+  .scroll-thin { scrollbar-width: thin; }
+}
+
+/* ---------- Motion (respects reduced-motion preference) ---------- */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+.anim-fade { animation: fade-in 0.18s ease-out; }
+.anim-sheet { animation: slide-up 0.22s ease-out; }
+.anim-pop { animation: pop 0.16s ease-out; }
+.anim-toast { animation: toast-in 0.2s ease-out; }
+.skeleton { position: relative; overflow: hidden; @apply bg-ink-100 rounded-lg; }
+.skeleton::after { content: ''; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent); animation: shimmer 1.4s infinite; }
+html[dir='rtl'] .skeleton::after { animation-direction: reverse; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* ---------- Safe areas for installed PWA on phones with notches ---------- */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pt-safe { padding-top: env(safe-area-inset-top); }
+
+/* ---------- Print: receipts and statements only ---------- */
+/* Anything marked .no-print disappears; the document itself (.print-area) fills the page. */
+@media print {
+  @page { margin: 12mm; }
+  body { background: #fff !important; }
+  .no-print { display: none !important; }
+  .print-area { position: static !important; box-shadow: none !important; border: none !important; max-width: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  /* Hide the app chrome and everything outside the printable document. */
+  body.has-print-doc #root { display: none !important; }
+  body.has-print-doc #print-portal { display: block !important; }
+  * { animation: none !important; }
+}
+#print-portal { display: none; }
